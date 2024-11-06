@@ -1,9 +1,14 @@
---// Usługi \\--
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
+--!native
+--!optimize 2
 
---// Oczekiwanie na załadowanie gry \\--
+--// Usługi \\--
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+
+--// Oczekiwanie na załadowanie \\--
 if not game.IsLoaded then 
     game.Loaded:Wait() 
 end
@@ -11,7 +16,7 @@ if Players.LocalPlayer.PlayerGui:FindFirstChild("LoadingUI") and Players.LocalPl
     repeat task.wait() until not Players.LocalPlayer.PlayerGui.LoadingUI.Enabled
 end
 
---// Zmienne \\--
+--// GUI i Biblioteka \\--
 local playerGui = Players.LocalPlayer.PlayerGui
 local mainUI = Instance.new("ScreenGui", playerGui)
 local window = Instance.new("Frame", mainUI)
@@ -24,7 +29,7 @@ window.BorderSizePixel = 0
 window.Name = "MainWindow"
 window.BackgroundTransparency = 1 -- Ustawienie przezroczystości ramki na 1
 
---// Biblioteka \\--
+--// Ładowanie Biblioteki \\--
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/LinoriaLib/refs/heads/main/Library.lua"))()
 
 local MainWindow = Library:CreateWindow({
@@ -34,163 +39,52 @@ local MainWindow = Library:CreateWindow({
 })
 
 local Tabs = {
-    Main = MainWindow:AddTab("Main"), -- Tworzymy zakładkę "Main"
+    Main = MainWindow:AddTab("Main")
 }
 
--- Funkcja teleportacji do konkretnego miejsca: "Teleport do Recepcjonistki"
-local function teleportToRecepcjonistka()
+--// Funkcje Teleportacji \\--
+local function teleportToCoords(x, y, z)
     local character = Players.LocalPlayer.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
-        character.HumanoidRootPart.CFrame = CFrame.new(493.91, 3, 96.88)
+        character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
     end
 end
 
--- Funkcja teleportacji do konkretnego miejsca: "Teleport do Tego Typa z Bateriami"
-local function teleportToTegoTypaZBateriami()
-    local character = Players.LocalPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        character.HumanoidRootPart.CFrame = CFrame.new(425.10, 5, 226.33)
-    end
+-- Definicje teleportów z przyciskami
+local teleports = {
+    { name = "Teleport do Komputerków", x = 662.80, y = 3, z = 29.34 },
+    { name = "Teleport do Main hali", x = 605, y = 3, z = 34 },
+    { name = "Pokój szefa obok main hali", x = 610, y = 3, z = -44 },
+    { name = "Avoid Officer", x = 0, y = 50, z = 0 },
+    { name = "Anti Avoid Officer", x = 0, y = 3, z = 0 },
+    { name = "Teleport do Finance Department", x = 637.98, y = 3, z = 99.98 },
+    { name = "Teleport do Walizki tego Typa", x = 745.51, y = 3, z = 158.35 },
+    { name = "Teleport do Sejfu", x = 697.62, y = 3, z = 167.49 },
+    { name = "Teleport do Recepcjonistki", x = 493.91, y = 3, z = 96.88 },
+    { name = "Teleport do Typa z Bateriami", x = 425.10, y = 5, z = 226.33 }
+}
+
+-- Tworzenie przycisków do teleportacji
+local OptionsGroup = Tabs.Main:AddLeftGroupbox("Teleporty")
+for _, tp in ipairs(teleports) do
+    OptionsGroup:AddButton(tp.name, function()
+        teleportToCoords(tp.x, tp.y, tp.z)
+    end)
 end
 
--- Funkcja teleportacji do konkretnego miejsca: "Teleport do Finance Department"
-local function teleportToFinanceDepartment()
-    local character = Players.LocalPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        character.HumanoidRootPart.CFrame = CFrame.new(637.98, 3, 99.98)
-    end
-end
-
--- Funkcja teleportacji do konkretnego miejsca: "Teleport do Walizki tego typa"
-local function teleportToWalizkiTegoTypa()
-    local character = Players.LocalPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        character.HumanoidRootPart.CFrame = CFrame.new(745.51, 3, 158.35)
-    end
-end
-
--- Funkcja teleportacji do konkretnego miejsca: "Teleport do Sejfu"
-local function teleportToSejfu()
-    local character = Players.LocalPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        character.HumanoidRootPart.CFrame = CFrame.new(697.62, 3, 167.49)
-    end
-end
-
--- Funkcja teleportacji do obecnych współrzędnych X, Y = 20, Z
-local function teleportToCurrentCoordinatesY20()
-    local character = Players.LocalPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        local currentPosition = character.HumanoidRootPart.Position
-        -- Ustawiamy nową wartość Y na 20, a X i Z na obecne
-        character.HumanoidRootPart.CFrame = CFrame.new(currentPosition.X, 20, currentPosition.Z)
-    end
-end
-
--- Funkcja teleportacji do obecnych współrzędnych X, Y = 3, Z
-local function teleportToCurrentCoordinatesY3()
-    local character = Players.LocalPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        local currentPosition = character.HumanoidRootPart.Position
-        -- Ustawiamy nową wartość Y na 3, a X i Z na obecne
-        character.HumanoidRootPart.CFrame = CFrame.new(currentPosition.X, 3, currentPosition.Z)
-    end
-end
-
--- Funkcja sprawdzania obecnych współrzędnych
-local function getCurrentCoordinates()
-    local character = Players.LocalPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        local currentPosition = character.HumanoidRootPart.Position
-        return string.format("X: %.2f, Y: %.2f, Z: %.2f", currentPosition.X, currentPosition.Y, currentPosition.Z)
-    end
-    return "Brak dostępnych współrzędnych."
-end
-
--- Sekcja w GUI
-local OptionsGroup = Tabs.Main:AddLeftGroupbox("Options")
-
-OptionsGroup:AddLabel("Available Options:")
-
--- Przycisk teleportacji do konkretnego miejsca: "Teleport do Komputerków"
-OptionsGroup:AddButton("Teleport do Komputerków", function()
-    teleportToKomputerkow() -- Teleportacja do (662.80, 3, 29.34)
-end)
-
--- Przycisk teleportacji do konkretnego miejsca: "Teleport do Main hali"
-OptionsGroup:AddButton("Teleport do Main hali", function()
-    teleportToMainHali() -- Teleportacja do (605, 3, 34)
-end)
-
--- Przycisk teleportacji do konkretnego miejsca: "Pokój szefa obok main hali"
-OptionsGroup:AddButton("Pokój szefa obok main hali", function()
-    teleportToSzefa() -- Teleportacja do (610, 3, -44)
-end)
-
--- Przycisk teleportacji do obecnych współrzędnych X, Y = 20, Z
+-- Teleport na Y+20 lub Y+3 na bieżącej pozycji
 OptionsGroup:AddButton("Avoid Officer", function()
-    teleportToCurrentCoordinatesY20() -- Teleportacja do obecnych X, Y = 20, Z
+    local position = Players.LocalPlayer.Character.HumanoidRootPart.Position
+    teleportToCoords(position.X, 50, position.Z)
 end)
 
--- Przycisk teleportacji do obecnych współrzędnych X, Y = 3, Z
 OptionsGroup:AddButton("Anti Avoid Officer", function()
-    teleportToCurrentCoordinatesY3() -- Teleportacja do obecnych X, Y = 3, Z
+    local position = Players.LocalPlayer.Character.HumanoidRootPart.Position
+    teleportToCoords(position.X, 3, position.Z)
 end)
 
--- Przycisk teleportacji do konkretnego miejsca: "Teleport do Finance Department"
-OptionsGroup:AddButton("Teleport do Finance Department", function()
-    teleportToFinanceDepartment() -- Teleportacja do (637.98, 3, 99.98)
-end)
-
--- Przycisk teleportacji do konkretnego miejsca: "Teleport do Walizki tego typa"
-OptionsGroup:AddButton("Teleport do Walizki tego typa", function()
-    teleportToWalizkiTegoTypa() -- Teleportacja do (745.51, 3, 158.35)
-end)
-
--- Przycisk teleportacji do konkretnego miejsca: "Teleport do Sejfu"
-OptionsGroup:AddButton("Teleport do Sejfu", function()
-    teleportToSejfu() -- Teleportacja do (697.62, 3, 167.49)
-end)
-
--- Nowe przyciski teleportacji:
-OptionsGroup:AddButton("Teleport do Recepcjonistki", function()
-    teleportToRecepcjonistka() -- Teleportacja do (493.91, 3, 96.88)
-end)
-
-OptionsGroup:AddButton("Teleport do Tego Typa z Bateriami", function()
-    teleportToTegoTypaZBateriami() -- Teleportacja do (425.10, 5, 226.33)
-end)
-
--- Przycisk sprawdzania obecnych współrzędnych
-OptionsGroup:AddButton("Sprawdź obecne współrzędne", function()
-    local coords = getCurrentCoordinates()
-    Library:Notify("Aktualne współrzędne: " .. coords, 5)
-end)
-
--- Możliwość przeciągania GUI
-local dragging = false
-local dragInput
-local dragStart
-local startPos
-
-window.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragInput = input
-        dragStart = input.Position
-        startPos = window.Position
-
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-window.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        window.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
+-- Przycisk do sprawdzania bieżących współrzędnych
+OptionsGroup:AddButton("Pokaż bieżące współrzędne", function()
+    local position = Players.LocalPlayer.Character.HumanoidRootPart.Position
+    Library:Notify("Twoje obecne współrzędne: X = " .. math.floor(position.X) .. ", Y = " .. math.floor(position.Y) .. ", Z = " .. math.floor(position.Z), 5)
 end)
