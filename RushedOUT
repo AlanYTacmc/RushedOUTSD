@@ -55,13 +55,14 @@ local teleports = {
     { name = "Teleport do Komputerków", x = 662.80, y = 3, z = 29.34 },
     { name = "Teleport do Main hali", x = 605, y = 3, z = 34 },
     { name = "Pokój szefa obok main hali", x = 610, y = 3, z = -44 },
-    { name = "Avoid Officer", x = 0, y = 50, z = 0 },
-    { name = "Anti Avoid Officer", x = 0, y = 3, z = 0 },
     { name = "Teleport do Finance Department", x = 637.98, y = 3, z = 99.98 },
     { name = "Teleport do Walizki tego Typa", x = 745.51, y = 3, z = 158.35 },
     { name = "Teleport do Sejfu", x = 697.62, y = 3, z = 167.49 },
     { name = "Teleport do Recepcjonistki", x = 493.91, y = 3, z = 96.88 },
-    { name = "Teleport do Typa z Bateriami", x = 425.10, y = 5, z = 226.33 }
+    { name = "Teleport do Typa z Bateriami", x = 425.10, y = 5, z = 226.33 },
+    { name = "Teleport przed niebieskimi drzwiami", x = 531, y = 2, z = 34 },
+    { name = "Teleport do tool boxa", x = 516, y = 3, z = -159 },
+    { name = "Te drzwi ktore mlotem trzeba", x = 488, y = 3, z = -49 }
 }
 
 -- Tworzenie przycisków do teleportacji
@@ -72,7 +73,7 @@ for _, tp in ipairs(teleports) do
     end)
 end
 
--- Teleport na Y+20 lub Y+3 na bieżącej pozycji
+-- Teleport na Y+50 lub Y+3 na bieżącej pozycji
 OptionsGroup:AddButton("Avoid Officer", function()
     local position = Players.LocalPlayer.Character.HumanoidRootPart.Position
     teleportToCoords(position.X, 50, position.Z)
@@ -88,3 +89,36 @@ OptionsGroup:AddButton("Pokaż bieżące współrzędne", function()
     local position = Players.LocalPlayer.Character.HumanoidRootPart.Position
     Library:Notify("Twoje obecne współrzędne: X = " .. math.floor(position.X) .. ", Y = " .. math.floor(position.Y) .. ", Z = " .. math.floor(position.Z), 5)
 end)
+
+-- Definicje współrzędnych do teleportacji sekwencyjnej
+local teleportSequence = {
+    {x = 406, y = 4, z = 252},
+    {x = 390, y = 4, z = 252},
+    {x = 375, y = 11, z = 259},
+    {x = 348, y = 2, z = 255},
+    {x = 328, y = 8, z = 247},
+    {x = 328, y = 9, z = 211},
+    {x = 329, y = 12, z = 169},
+    {x = 351, y = 18, z = 168},
+    {x = 361, y = 29, z = 212},
+    {x = 361, y = 29, z = 245},
+    {x = 311, y = 43, z = 256},
+    {x = 314, y = 43, z = 163},
+    {x = 316, y = 36, z = 48},
+    {x = 337, y = 36, z = 49},
+    {x = 347, y = 34, z = 80},
+    {x = 375, y = 4, z = 124}
+}
+
+-- Funkcja do uruchamiania sekwencyjnych teleportacji
+local function startTeleportSequence()
+    coroutine.wrap(function()
+        for _, coords in ipairs(teleportSequence) do
+            teleportToCoords(coords.x, coords.y, coords.z)
+            task.wait(2)  -- Czekaj 5 sekund przed przejściem do kolejnych współrzędnych
+        end
+    end)()
+end
+
+-- Dodanie przycisku do sekwencyjnej teleportacji
+OptionsGroup:AddButton("Auto bateryjki", startTeleportSequence)
