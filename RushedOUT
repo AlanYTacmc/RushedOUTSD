@@ -1,14 +1,12 @@
---!native
---!optimize 2
 
---// Usługi \\--
+
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
---// Oczekiwanie na załadowanie \\--
+
 if not game.IsLoaded then 
     game.Loaded:Wait() 
 end
@@ -16,12 +14,12 @@ if Players.LocalPlayer.PlayerGui:FindFirstChild("LoadingUI") and Players.LocalPl
     repeat task.wait() until not Players.LocalPlayer.PlayerGui.LoadingUI.Enabled
 end
 
---// GUI i Biblioteka \\--
+
 local playerGui = Players.LocalPlayer.PlayerGui
 local mainUI = Instance.new("ScreenGui", playerGui)
 local window = Instance.new("Frame", mainUI)
 
--- GUI Design
+
 window.Size = UDim2.new(0.5, 0, 0.5, 0)
 window.Position = UDim2.new(0.25, 0, 0.25, 0)
 window.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -29,7 +27,7 @@ window.BorderSizePixel = 0
 window.Name = "MainWindow"
 window.BackgroundTransparency = 1 -- Ustawienie przezroczystości ramki na 1
 
---// Ładowanie Biblioteki \\--
+
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/LinoriaLib/refs/heads/main/Library.lua"))()
 
 local MainWindow = Library:CreateWindow({
@@ -42,7 +40,7 @@ local Tabs = {
     Main = MainWindow:AddTab("Main")
 }
 
---// Funkcje Teleportacji \\--
+
 local function teleportToCoords(x, y, z)
     local character = Players.LocalPlayer.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
@@ -50,7 +48,7 @@ local function teleportToCoords(x, y, z)
     end
 end
 
--- Definicje teleportów z przyciskami
+
 local teleports = {
     { name = "Teleport do Komputerków", x = 662.80, y = 3, z = 29.34 },
     { name = "Teleport do Main hali", x = 605, y = 3, z = 34 },
@@ -65,7 +63,7 @@ local teleports = {
     { name = "Te drzwi ktore mlotem trzeba", x = 488, y = 3, z = -49 }
 }
 
--- Tworzenie przycisków do teleportacji
+
 local OptionsGroup = Tabs.Main:AddLeftGroupbox("Teleporty")
 for _, tp in ipairs(teleports) do
     OptionsGroup:AddButton(tp.name, function()
@@ -73,7 +71,7 @@ for _, tp in ipairs(teleports) do
     end)
 end
 
--- Teleport na Y+50 lub Y+3 na bieżącej pozycji
+
 OptionsGroup:AddButton("Avoid Officer", function()
     local position = Players.LocalPlayer.Character.HumanoidRootPart.Position
     teleportToCoords(position.X, 50, position.Z)
@@ -84,13 +82,12 @@ OptionsGroup:AddButton("Anti Avoid Officer", function()
     teleportToCoords(position.X, 3, position.Z)
 end)
 
--- Przycisk do sprawdzania bieżących współrzędnych
+
 OptionsGroup:AddButton("Pokaż bieżące współrzędne", function()
     local position = Players.LocalPlayer.Character.HumanoidRootPart.Position
     Library:Notify("Twoje obecne współrzędne: X = " .. math.floor(position.X) .. ", Y = " .. math.floor(position.Y) .. ", Z = " .. math.floor(position.Z), 5)
 end)
 
--- Definicje współrzędnych do teleportacji sekwencyjnej
 local teleportSequence = {
     {x = 406, y = 4, z = 252},
     {x = 390, y = 4, z = 252},
@@ -110,12 +107,12 @@ local teleportSequence = {
     {x = 375, y = 4, z = 124}
 }
 
--- Funkcja do uruchamiania sekwencyjnych teleportacji
+
 local function startTeleportSequence()
     coroutine.wrap(function()
         for _, coords in ipairs(teleportSequence) do
             teleportToCoords(coords.x, coords.y, coords.z)
-            task.wait(2)  -- Czekaj 5 sekund przed przejściem do kolejnych współrzędnych
+            task.wait(2)  
         end
     end)()
 end
