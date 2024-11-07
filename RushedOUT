@@ -117,5 +117,5 @@ local function startTeleportSequence()
     end)()
 end
 
--- Dodanie przycisku do sekwencyjnej teleportacji
+
 OptionsGroup:AddButton("Auto bateryjki", startTeleportSequence)
